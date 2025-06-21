@@ -1,82 +1,84 @@
-const express = require("express");
-const mongoose = require("mongoose");
-const cors = require("cors");
-const helmet = require("helmet");
-const morgan = require("morgan");
-const swaggerUi = require("swagger-ui-express");
-const swaggerSpec = require("./config/swagger");
-const { scheduleStatusUpdates } = require("./utils/cronJobs");
-const connectDB = require("./config/database");
-const { ERROR_MESSAGES, createErrorResponse } = require("./utils/errorHandler");
-require("dotenv").config();
+// This file is now unused for Vercel deployment. All logic moved to api/index.js
 
-const app = express();
+// const express = require("express");
+// const mongoose = require("mongoose");
+// const cors = require("cors");
+// const helmet = require("helmet");
+// const morgan = require("morgan");
+// const swaggerUi = require("swagger-ui-express");
+// const swaggerSpec = require("./config/swagger");
+// const { scheduleStatusUpdates } = require("./utils/cronJobs");
+// const connectDB = require("./config/database");
+// const { ERROR_MESSAGES, createErrorResponse } = require("./utils/errorHandler");
+// require("dotenv").config();
 
-// Middleware
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(
-  cors({
-    origin: process.env.CORS_ORIGIN || "*",
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-  })
-);
-app.use(helmet());
-app.use(morgan("dev"));
+// const app = express();
 
-// Swagger Documentation
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-app.get("/swagger.json", (req, res) => {
-  res.setHeader("Content-Type", "application/json");
-  res.send(swaggerSpec);
-});
+// // Middleware
+// app.use(express.json());
+// app.use(express.urlencoded({ extended: true }));
+// app.use(
+//   cors({
+//     origin: process.env.CORS_ORIGIN || "*",
+//     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+//     allowedHeaders: ["Content-Type", "Authorization"],
+//   })
+// );
+// app.use(helmet());
+// app.use(morgan("dev"));
 
-// Connect to MongoDB
-connectDB();
+// // Swagger Documentation
+// app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+// app.get("/swagger.json", (req, res) => {
+//   res.setHeader("Content-Type", "application/json");
+//   res.send(swaggerSpec);
+// });
 
-// Initialize cron job for donor status updates
-scheduleStatusUpdates();
+// // Connect to MongoDB
+// connectDB();
 
-// Handle MongoDB connection events
-mongoose.connection.on("error", (err) => {
-  console.error("MongoDB connection error:", err);
-});
+// // Initialize cron job for donor status updates
+// scheduleStatusUpdates();
 
-mongoose.connection.on("disconnected", () => {
-  console.log("MongoDB disconnected");
-});
+// // Handle MongoDB connection events
+// mongoose.connection.on("error", (err) => {
+//   console.error("MongoDB connection error:", err);
+// });
 
-// Routes
-const authRoutes = require("./routes/auth.routes");
-const donorRoutes = require("./routes/donor.routes");
-const donationRoutes = require("./routes/donation.routes");
-const groupRoutes = require("./routes/group.routes");
+// mongoose.connection.on("disconnected", () => {
+//   console.log("MongoDB disconnected");
+// });
 
-app.use("/api/auth", authRoutes);
-app.use("/api/donors", donorRoutes);
-app.use("/api/donations", donationRoutes);
-app.use("/api/groups", groupRoutes);
+// // Routes
+// const authRoutes = require("./routes/auth.routes");
+// const donorRoutes = require("./routes/donor.routes");
+// const donationRoutes = require("./routes/donation.routes");
+// const groupRoutes = require("./routes/group.routes");
 
-// Health check endpoint
-app.get("/api/health", (req, res) => {
-  res.status(200).send("OK");
-});
+// app.use("/api/auth", authRoutes);
+// app.use("/api/donors", donorRoutes);
+// app.use("/api/donations", donationRoutes);
+// app.use("/api/groups", groupRoutes);
 
-// Lightweight health check endpoint for uptime monitoring
-app.get("/ping", (req, res) => {
-  res.status(200).send("pong");
-});
+// // Health check endpoint
+// app.get("/api/health", (req, res) => {
+//   res.status(200).send("OK");
+// });
 
-// Error handling middleware
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res
-    .status(500)
-    .json(createErrorResponse(500, ERROR_MESSAGES.SERVER_ERROR, err.message));
-});
+// // Lightweight health check endpoint for uptime monitoring
+// app.get("/ping", (req, res) => {
+//   res.status(200).send("pong");
+// });
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
+// // Error handling middleware
+// app.use((err, req, res, next) => {
+//   console.error(err.stack);
+//   res
+//     .status(500)
+//     .json(createErrorResponse(500, ERROR_MESSAGES.SERVER_ERROR, err.message));
+// });
+
+// const PORT = process.env.PORT || 3000;
+// app.listen(PORT, () => {
+//   console.log(`Server is running on port ${PORT}`);
+// });
